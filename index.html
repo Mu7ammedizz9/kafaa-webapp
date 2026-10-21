@@ -1,0 +1,448 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>اختبار الكفاءة</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --blue: #174ea6;
+      --bg: #f3f6fb;
+      --border: #d9e1ee;
+      --text: #172033;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Tahoma, Arial, sans-serif;
+    }
+    .app { max-width: 650px; margin: auto; padding: 16px; }
+    header {
+      background: #173b70;
+      color: white;
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+    }
+    header h1 { margin: 0 0 8px; font-size: 22px; }
+    header p { margin: 0; color: #d9e8ff; font-size: 14px; }
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .muted { color: var(--muted); font-size: 13px; }
+    .progress {
+      height: 7px;
+      background: #e5eaf2;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 14px 0;
+    }
+    #progressBar {
+      height: 100%;
+      width: 0;
+      background: var(--blue);
+      transition: width .2s;
+    }
+    #timer {
+      color: var(--blue);
+      font-weight: bold;
+      font-size: 18px;
+      direction: ltr;
+    }
+    #question {
+      font-size: 19px;
+      line-height: 1.8;
+      margin: 18px 0;
+      direction: ltr;
+      text-align: left;
+    }
+    .translation {
+      background: #f0f5ff;
+      border-radius: 10px;
+      padding: 12px;
+      margin: 12px 0;
+      line-height: 1.8;
+    }
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      width: 100%;
+      text-align: left;
+      direction: ltr;
+      padding: 14px;
+      margin: 9px 0;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: white;
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+    }
+    .option.selected {
+      border: 2px solid var(--blue);
+      background: #edf4ff;
+    }
+    .letter {
+      font-weight: bold;
+      color: var(--blue);
+      min-width: 22px;
+    }
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .primary, .secondary, .danger {
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-size: 15px;
+      font-weight: bold;
+    }
+    .primary { background: var(--blue); color: white; }
+    .secondary { background: #e9eef7; color: #173b70; }
+    .danger { background: #fee2e2; color: #991b1b; }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    .actions button { flex: 1; }
+    .hidden { display: none !important; }
+    .review-item {
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+      line-height: 1.8;
+    }
+    .correct { color: #087443; }
+    .wrong { color: #b42318; }
+    .full { width: 100%; }
+    @media (max-width: 400px) {
+      .app { padding: 10px; }
+      .card { padding: 14px; }
+      #question { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <h1>منصة اختبار الكفاءة</h1>
+    <p>نظام امتحان تجريبي • اختر إجابتك ثم سلّم الامتحان عند الانتهاء</p>
+  </header>
+
+  <section class="card" id="setup">
+    <h2>إعداد الامتحان</h2>
+    <p class="muted">اختر المادة لبدء الاختبار التجريبي.</p>
+    <button class="primary full" onclick="startExam('english')">
+      اللغة الإنجليزية
+    </button>
+    <button class="secondary full" style="margin-top:10px"
+      onclick="startExam('computer')">الحاسوب</button>
+    <button class="secondary full" style="margin-top:10px"
+      onclick="startExam('arabic')">اللغة العربية</button>
+    <p class="muted">هذه نسخة تجريبية وليست مرتبطة بعد بنظام الاشتراكات.</p>
+  </section>
+
+  <section class="card hidden" id="exam">
+    <div class="row">
+      <span class="muted" id="subjectLabel">المادة</span>
+      <span id="timer">05:00</span>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <strong id="questionCount">السؤال 1</strong>
+      <span class="muted" id="answeredCount">تمت الإجابة: 0</span>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+
+    <div id="question"></div>
+
+    <button class="secondary" id="translationButton"
+      onclick="toggleTranslation()">إظهار الترجمة العربية</button>
+    <div id="translation" class="translation hidden"></div>
+
+    <div id="options"></div>
+
+    <div class="actions">
+      <button class="secondary" id="previousButton"
+        onclick="moveQuestion(-1)">السابق</button>
+      <button class="primary" id="nextButton"
+        onclick="moveQuestion(1)">التالي</button>
+    </div>
+    <button class="danger full" style="margin-top:12px"
+      onclick="confirmSubmit()">إنهاء وتسليم الامتحان</button>
+  </section>
+
+  <section class="card hidden" id="result">
+    <h2>نتيجة الامتحان</h2>
+    <p id="score" style="font-size:24px;font-weight:bold"></p>
+    <p id="scoreDetails"></p>
+    <div class="actions">
+      <button class="primary" onclick="showReview()">مراجعة الأخطاء</button>
+      <button class="secondary" onclick="resetExam()">إنهاء</button>
+    </div>
+  </section>
+
+  <section class="card hidden" id="review">
+    <h2>مراجعة الإجابات</h2>
+    <p class="muted">تظهر الإجابة الصحيحة والتفسير بعد تسليم الامتحان فقط.</p>
+    <div id="reviewList"></div>
+    <button class="secondary full" onclick="showResult()">العودة للنتيجة</button>
+  </section>
+</main>
+
+<script>
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+}
+
+const demoQuestions = {
+  english: [
+    {
+      question: "Choose the correct answer: She _____ to university every day.",
+      translation: "اختر الإجابة الصحيحة: هي _____ إلى الجامعة كل يوم.",
+      options: ["go", "goes", "going", "gone"],
+      translations: ["يذهب", "تذهب", "ذاهب", "ذهب"],
+      answer: 1,
+      explanation: "نستخدم goes مع الضمير She في زمن المضارع البسيط."
+    },
+    {
+      question: "What is the opposite of 'ancient'?",
+      translation: "ما الكلمة المضادة لكلمة ancient؟",
+      options: ["Old", "Historic", "Modern", "Past"],
+      translations: ["قديم", "تاريخي", "حديث", "الماضي"],
+      answer: 2,
+      explanation: "Modern تعني حديث، وهي مضادة لكلمة ancient."
+    }
+  ],
+  computer: [
+    {
+      question: "Which application is primarily used to create spreadsheets?",
+      translation: "أي تطبيق يُستخدم أساساً لإنشاء جداول البيانات؟",
+      options: [
+        "Microsoft Word", "Microsoft Excel",
+        "Microsoft PowerPoint", "Microsoft Paint"
+      ],
+      translations: [
+        "مايكروسوفت وورد",
+        "مايكروسوفت إكسل",
+        "مايكروسوفت باوربوينت",
+        "مايكروسوفت بينت"
+      ],
+      answer: 1,
+      explanation: "يُستخدم Microsoft Excel لإنشاء جداول البيانات وإدارتها."
+    }
+  ],
+  arabic: [
+    {
+      question: "ما نوع الفعل في جملة: كتبَ الطالبُ الدرسَ؟",
+      translation: "",
+      options: ["فعل مضارع", "فعل ماضٍ", "فعل أمر", "اسم"],
+      translations: ["", "", "", ""],
+      answer: 1,
+      explanation: "كتبَ فعل ماضٍ."
+    }
+  ]
+};
+
+const subjectNames = {
+  english: "اللغة الإنجليزية",
+  computer: "الحاسوب",
+  arabic: "اللغة العربية"
+};
+
+let questions = [];
+let answers = [];
+let current = 0;
+let seconds = 300;
+let timerId = null;
+let submitted = false;
+let showArabic = false;
+
+function startExam(subject) {
+  questions = demoQuestions[subject].map(q => ({...q}));
+  answers = Array(questions.length).fill(null);
+  current = 0;
+  seconds = Math.max(300, questions.length * 60);
+  submitted = false;
+  showArabic = false;
+
+  document.getElementById("setup").classList.add("hidden");
+  document.getElementById("result").classList.add("hidden");
+  document.getElementById("review").classList.add("hidden");
+  document.getElementById("exam").classList.remove("hidden");
+  document.getElementById("subjectLabel").textContent = subjectNames[subject];
+
+  renderQuestion();
+  clearInterval(timerId);
+  timerId = setInterval(tick, 1000);
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  document.getElementById("questionCount").textContent =
+    `السؤال ${current + 1} من ${questions.length}`;
+  document.getElementById("answeredCount").textContent =
+    `تمت الإجابة: ${answers.filter(a => a !== null).length}`;
+  document.getElementById("progressBar").style.width =
+    `${((current + 1) / questions.length) * 100}%`;
+  document.getElementById("question").textContent = q.question;
+
+  const tr = document.getElementById("translation");
+  tr.textContent = q.translation || "لا توجد ترجمة لهذا السؤال.";
+  tr.classList.toggle("hidden", !showArabic || !q.translation);
+  document.getElementById("translationButton").textContent =
+    showArabic ? "إخفاء الترجمة العربية" : "إظهار الترجمة العربية";
+
+  const options = document.getElementById("options");
+  options.innerHTML = "";
+  q.options.forEach((option, i) => {
+    const button = document.createElement("button");
+    button.className = "option" + (answers[current] === i ? " selected" : "");
+    const letter = document.createElement("span");
+    letter.className = "letter";
+    letter.textContent = "ABCD"[i] + ".";
+    const text = document.createElement("span");
+    text.textContent = option;
+    text.style.flex = "1";
+    button.append(letter, text);
+
+    if (showArabic && q.translations?.[i]) {
+      const translation = document.createElement("span");
+      translation.textContent = q.translations[i];
+      translation.style.cssText = "display:block;color:#64748b;font-size:13px";
+      text.append(document.createElement("br"), translation);
+    }
+
+    button.onclick = () => {
+      if (submitted) return;
+      answers[current] = i;
+      renderQuestion();
+    };
+    options.appendChild(button);
+  });
+
+  document.getElementById("previousButton").disabled = current === 0;
+  document.getElementById("nextButton").textContent =
+    current === questions.length - 1 ? "مراجعة قبل التسليم" : "التالي";
+}
+
+function toggleTranslation() {
+  showArabic = !showArabic;
+  renderQuestion();
+}
+
+function moveQuestion(step) {
+  const target = current + step;
+  if (target >= questions.length) {
+    const unanswered = answers.filter(a => a === null).length;
+    if (unanswered) {
+      alert(`باقي ${unanswered} سؤال بدون إجابة. يمكنك مراجعتها قبل التسليم.`);
+      return;
+    }
+    confirmSubmit();
+    return;
+  }
+  if (target < 0) return;
+  current = target;
+  renderQuestion();
+}
+
+function tick() {
+  if (submitted) return;
+  seconds--;
+  document.getElementById("timer").textContent =
+    `${String(Math.floor(Math.max(0, seconds) / 60)).padStart(2, "0")}:` +
+    `${String(Math.max(0, seconds) % 60).padStart(2, "0")}`;
+  if (seconds <= 0) submitExam();
+}
+
+function confirmSubmit() {
+  if (confirm("هل تريد إنهاء وتسليم الامتحان؟ لن تتمكن من تغيير الإجابات بعد التسليم.")) {
+    submitExam();
+  }
+}
+
+function submitExam() {
+  if (submitted) return;
+  submitted = true;
+  clearInterval(timerId);
+
+  const correct = answers.reduce(
+    (sum, answer, i) => sum + (answer === questions[i].answer ? 1 : 0), 0
+  );
+  const wrong = answers.length - correct;
+  const percent = Math.round(correct / questions.length * 100);
+
+  document.getElementById("exam").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+  document.getElementById("score").textContent =
+    `درجتك: ${correct} من ${questions.length} (${percent}%)`;
+  document.getElementById("scoreDetails").textContent =
+    `إجابات صحيحة: ${correct} • إجابات خاطئة أو غير مجابة: ${wrong}`;
+}
+
+function showReview() {
+  document.getElementById("result").classList.add("hidden");
+  document.getElementById("review").classList.remove("hidden");
+  const list = document.getElementById("reviewList");
+  list.innerHTML = "";
+
+  questions.forEach((q, i) => {
+    if (answers[i] === q.answer) return;
+    const item = document.createElement("div");
+    item.className = "review-item";
+    const title = document.createElement("strong");
+    title.textContent = `${i + 1}. ${q.question}`;
+    const yourAnswer = document.createElement("p");
+    yourAnswer.className = "wrong";
+    yourAnswer.textContent = "إجابتك: " +
+      (answers[i] === null ? "لم تجب" : q.options[answers[i]]);
+    const correct = document.createElement("p");
+    correct.className = "correct";
+    correct.textContent = "الإجابة الصحيحة: " + q.options[q.answer];
+    const explanation = document.createElement("p");
+    explanation.textContent = "التفسير: " + q.explanation;
+    item.append(title, yourAnswer, correct, explanation);
+    list.appendChild(item);
+  });
+
+  if (!list.children.length) {
+    list.textContent = "أحسنت! لم ترتكب أي خطأ.";
+  }
+}
+
+function showResult() {
+  document.getElementById("review").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+}
+
+function resetExam() {
+  clearInterval(timerId);
+  submitted = false;
+  document.getElementById("result").classList.add("hidden");
+  document.getElementById("review").classList.add("hidden");
+  document.getElementById("setup").classList.remove("hidden");
+}
+</script>
+</body>
+</html>
