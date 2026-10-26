@@ -78,6 +78,7 @@ button{font-family:inherit;cursor:pointer}
     <div class="plan"><span>3 أشهر</span><strong>11,000 د.ع</strong></div>
     <div class="plan"><span>6 أشهر</span><strong>16,000 د.ع</strong></div>
     <p class="muted">للدفع والتفعيل اليدوي، تواصل مع إدارة كفاءة عبر تيليغرام فقط.</p>
+    <p class="muted" id="myTelegramId" dir="ltr" style="text-align:center"></p>
     <button class="primary full" onclick="contactTelegram()">التواصل عبر تيليغرام</button>
     <button class="secondary full" style="margin-top:9px" onclick="resetExam()">العودة إلى المواد</button>
   </div>
@@ -90,6 +91,9 @@ let questions=[],examToken=null,currentSubject=null,answers=[],current=0,seconds
 function showSubscriptionModal(message){
  const modal=document.getElementById("subscriptionModal");
  document.getElementById("subscriptionMessage").textContent=message||"انتهت التجربة المجانية أو أن هذه المادة تحتاج اشتراكاً مدفوعاً.";
+
+ const myId=tg?.initDataUnsafe?.user?.id;
+ document.getElementById("myTelegramId").textContent=myId?("ID: "+myId):"";
  modal.classList.remove("hidden");
 }
 function closeSubscriptionModal(){document.getElementById("subscriptionModal").classList.add("hidden");}
