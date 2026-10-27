@@ -32,6 +32,8 @@ button{font-family:inherit;cursor:pointer}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.actions button{flex:1}
 
 .hidden{display:none!important}
+.badge{display:inline-block;margin-right:8px;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:bold;background:#dcfce7;color:#166534;vertical-align:middle}.badge.used{background:#e2e8f0;color:#475569}
+.wa{background:#dcfce7;color:#166534;border:0;border-radius:10px;padding:13px 16px;font-size:15px;font-weight:bold}
 .modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.62);display:flex;align-items:center;justify-content:center;padding:18px;z-index:9999}
 .modal-box{background:#fff;width:100%;max-width:430px;border-radius:18px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:right}
 .modal-box h2{margin:0 0 10px}.modal-box p{line-height:1.8}.plan{border:1px solid var(--border);border-radius:10px;padding:11px;margin:8px 0;display:flex;justify-content:space-between;gap:8px}
@@ -48,10 +50,12 @@ button{font-family:inherit;cursor:pointer}
 <h2>إعداد الامتحان</h2><p class="muted">اختر المادة لبدء الاختبار التجريبي.</p>
 <button class="primary full" onclick="startExam('english')">اللغة الإنجليزية</button>
 <button class="secondary full" style="margin-top:10px" onclick="startExam('computer')">الحاسوب</button>
-<button class="secondary full" style="margin-top:10px" onclick="startExam('arabic')">اللغة العربية</button>
+<button class="secondary full" style="margin-top:10px" onclick="startExam('arabic')">اللغة العربية <span id="trialBadge" class="badge hidden"></span></button>
 <button class="secondary full" style="margin-top:10px" onclick="startExam('reading')">القطع الخارجية</button>
 <div class="card" style="margin-top:16px"><h3>الاشتراكات المدفوعة</h3><p class="muted">تواصل معنا للحصول على معلومات الدفع وتفعيل الاشتراك.</p>
-<button class="primary full" onclick="window.open('https://t.me/Mu7aaiz','_blank')">التواصل عبر تيليغرام</button>
+<button class="primary full" onclick="contactTelegram()">التواصل عبر تيليغرام (@Iqkafaa)</button>
+<button class="wa full" style="margin-top:9px" onclick="contactWhatsApp()">التواصل عبر واتساب</button>
+<p class="muted" dir="ltr" style="text-align:center;margin:10px 0 0">WhatsApp: +964 776 443 7836</p>
 </div>
 </section>
 <section class="card hidden" id="exam">
@@ -65,9 +69,10 @@ button{font-family:inherit;cursor:pointer}
 <div class="actions"><button class="secondary" id="previousButton" onclick="moveQuestion(-1)">السابق</button><button class="primary" id="nextButton" onclick="moveQuestion(1)">التالي</button></div>
 <button class="danger full" style="margin-top:12px" onclick="confirmSubmit()">إنهاء وتسليم الامتحان</button>
 </section>
-<section class="card hidden" id="result"><h2>نتيجة الامتحان</h2><p id="score" style="font-size:24px;font-weight:bold"></p><p id="scoreDetails"></p>
-<div class="actions"><button class="primary" onclick="showReview()">مراجعة الأخطاء</button><button class="secondary" onclick="resetExam()">إنهاء</button></div></section>
-<section class="card hidden" id="review"><h2>مراجعة الإجابات</h2><p class="muted">تظهر الإجابة الصحيحة والتفسير بعد تسليم الامتحان فقط.</p><div id="reviewList"></div><button class="secondary full" onclick="showResult()">العودة للنتيجة</button></section>
+<section class="card hidden" id="result"><h2 id="resultTitle">نتيجة الامتحان</h2><p id="score" style="font-size:24px;font-weight:bold"></p><p id="scoreDetails"></p>
+<div id="trialNotice" class="card hidden" style="background:#fff7e6;border-color:#f5d28a;margin:14px 0 0"><p style="margin:0 0 10px">أكملتَ التجربة المجانية. اشترك لإعادة الامتحان واستخدام بقية المواد.</p><button class="primary full" onclick="showSubscriptionModal('اشترك لإعادة الامتحان واستخدام بقية المواد.')">عرض الاشتراكات</button></div>
+<div class="actions"><button class="primary" id="reviewButton" onclick="showReview()">مراجعة الأخطاء</button><button class="secondary" onclick="resetExam()">إنهاء</button></div></section>
+<section class="card hidden" id="review"><h2>مراجعة الإجابات</h2><p class="muted">تظهر الإجابات الصحيحة بعد تسليم الامتحان فقط.</p><div id="reviewList"></div><button class="secondary full" onclick="showResult()">العودة للنتيجة</button></section>
 
 </main>
 <div id="subscriptionModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="subscriptionTitle">
@@ -77,9 +82,10 @@ button{font-family:inherit;cursor:pointer}
     <div class="plan"><span>شهر واحد</span><strong>4,000 د.ع</strong></div>
     <div class="plan"><span>3 أشهر</span><strong>11,000 د.ع</strong></div>
     <div class="plan"><span>6 أشهر</span><strong>16,000 د.ع</strong></div>
-    <p class="muted">للدفع والتفعيل اليدوي، تواصل مع إدارة كفاءة عبر تيليغرام فقط.</p>
+    <p class="muted">للدفع والتفعيل اليدوي، تواصل مع إدارة كفاءة عبر تيليغرام أو واتساب.</p>
     <p class="muted" id="myTelegramId" dir="ltr" style="text-align:center"></p>
-    <button class="primary full" onclick="contactTelegram()">التواصل عبر تيليغرام</button>
+    <button class="primary full" onclick="contactTelegram()">التواصل عبر تيليغرام (@Iqkafaa)</button>
+    <button class="wa full" style="margin-top:9px" onclick="contactWhatsApp()">التواصل عبر واتساب: +964 776 443 7836</button>
     <button class="secondary full" style="margin-top:9px" onclick="resetExam()">العودة إلى المواد</button>
   </div>
 </div>
@@ -97,7 +103,23 @@ function showSubscriptionModal(message){
  modal.classList.remove("hidden");
 }
 function closeSubscriptionModal(){document.getElementById("subscriptionModal").classList.add("hidden");}
-function contactTelegram(){window.open("https://t.me/Mu7aaiz","_blank");}
+const TELEGRAM_CONTACT="https://t.me/Iqkafaa",WHATSAPP_CONTACT="https://wa.me/9647764437836",API="https://mu7ammedizz7.pythonanywhere.com";
+function contactTelegram(){if(tg?.openTelegramLink)tg.openTelegramLink(TELEGRAM_CONTACT);else window.open(TELEGRAM_CONTACT,"_blank");}
+function contactWhatsApp(){if(tg?.openLink)tg.openLink(WHATSAPP_CONTACT);else window.open(WHATSAPP_CONTACT,"_blank");}
+async function loadStatus(){
+ const badge=document.getElementById("trialBadge");
+ badge.classList.add("hidden");
+ if(!tg?.initData)return;
+ try{
+  const r=await fetch(API+"/api/status",{headers:{"Authorization":"tma "+tg.initData}});
+  if(!r.ok)return;
+  const s=await r.json();
+  if(s.subscription_active)return;
+  badge.textContent=s.trial_available?"تجربة مجانية":"انتهت التجربة";
+  badge.classList.toggle("used",!s.trial_available);
+  badge.classList.remove("hidden");
+ }catch(e){console.error(e);}
+}
 function handleAccessError(message,status){
  if(status===402||status===403||/اشتراك|التجربة المجانية|اشترك|مدفوع/.test(message||"")){
   showSubscriptionModal(message);return true;
@@ -115,11 +137,20 @@ function renderQuestion(){
  const passageBox=document.getElementById("readingPassage"),readingTitle=document.getElementById("readingTitle"),readingText=document.getElementById("readingText");
  const hasPassage=currentSubject==="reading"&&Boolean(q.passage);
  passageBox.classList.toggle("hidden",!hasPassage);
- if(hasPassage){readingTitle.textContent=q.title||"قطعة القراءة";readingText.textContent=q.passage;}
+ if(hasPassage){
+  const arabicPassage=showArabic&&Boolean(q.passageTranslation);
+  readingTitle.textContent=arabicPassage?(q.titleTranslation||q.title||"قطعة القراءة"):(q.title||"قطعة القراءة");
+  readingText.textContent=arabicPassage?q.passageTranslation:q.passage;
+  passageBox.style.direction=arabicPassage?"rtl":"ltr";
+  passageBox.style.textAlign=arabicPassage?"right":"left";
+ }
  else{readingTitle.textContent="";readingText.textContent="";}
- const tr=document.getElementById("translation");tr.textContent=q.translation||"لا توجد ترجمة لهذا السؤال.";
+ const hasTranslation=Boolean(q.translation)||(q.translations||[]).some(Boolean)||(hasPassage&&Boolean(q.passageTranslation));
+ const tr=document.getElementById("translation");tr.textContent=q.translation||"";
  tr.classList.toggle("hidden",!showArabic||!q.translation);
- document.getElementById("translationButton").textContent=showArabic?"إخفاء الترجمة العربية":"إظهار الترجمة العربية";
+ const trBtn=document.getElementById("translationButton");
+ trBtn.classList.toggle("hidden",!hasTranslation);
+ trBtn.textContent=showArabic?"إخفاء الترجمة العربية":"إظهار الترجمة العربية";
  const options=document.getElementById("options");options.innerHTML="";
  q.options.forEach((option,i)=>{
   const button=document.createElement("button");button.type="button";button.className="option"+(answers[current]===i?" selected":"");button.setAttribute("aria-pressed",answers[current]===i?"true":"false");button.style.direction=dir;button.style.textAlign=align;
@@ -156,7 +187,7 @@ async function startExam(subject){
   const data=await response.json();if(!response.ok){const e=new Error(data.error||"تعذر تحميل الأسئلة.");e.status=response.status;throw e;}
   if(!Array.isArray(data.questions)||!data.questions.length||(data.total!==undefined&&data.questions.length!==data.total))throw new Error("بيانات الأسئلة المستلمة غير مكتملة.");
   examToken=data.exam_token;currentSubject=subject;isTrialExam=Boolean(data.is_trial);
-  questions=data.questions.map(q=>({id:q.id,question:q.question,options:q.options,translation:q.translation||"",translations:q.translations||[],passage:q.passage||"",passage_id:q.passage_id||"",title:q.title||""}));
+  questions=data.questions.map(q=>({id:q.id,question:q.question,options:q.options,translation:q.translation||"",translations:q.translations||[],passage:q.passage||"",passage_id:q.passage_id||"",title:q.title||"",passageTranslation:q.passage_translation||"",titleTranslation:q.title_translation||""}));
   answers=Array(questions.length).fill(null);current=0;seconds=Math.max(300,questions.length*60);endTime=Date.now()+seconds*1000;submitted=false;showArabic=false;
   document.getElementById("setup").classList.add("hidden");document.getElementById("result").classList.add("hidden");document.getElementById("review").classList.add("hidden");document.getElementById("exam").classList.remove("hidden");
   document.getElementById("subjectLabel").textContent=subjectNames[subject];updateTimer();
@@ -172,9 +203,12 @@ async function submitExam(){
   const data=await response.json();if(!response.ok)throw new Error(data.error||"تعذر تصحيح الامتحان");
   window.reviewData=data.review||[];examToken=null;
   document.getElementById("exam").classList.add("hidden");document.getElementById("review").classList.add("hidden");document.getElementById("result").classList.remove("hidden");
-  document.getElementById("score").textContent=`درجتك: ${data.correct} من ${data.total} (${data.percent}%)`;
-  document.getElementById("scoreDetails").textContent=`إجابات صحيحة: ${data.correct} • إجابات خاطئة أو غير مجابة: ${data.wrong_or_unanswered}`;
-  if(isTrialExam){showSubscriptionModal("أكملت التجربة المجانية ("+subjectNames[currentSubject]+"). اشترك حتى تتمكن من إعادة الامتحان واستخدام بقية المواد.");}
+  const reviewButton=document.getElementById("reviewButton"),resultTitle=document.getElementById("resultTitle");
+  resultTitle.textContent="نتيجة الامتحان";
+  document.getElementById("score").textContent=`درجتك: ${data.percent}%`;
+  document.getElementById("scoreDetails").textContent=`الإجابات: ${data.correct} صحيحة، ${data.wrong_or_unanswered} خاطئة أو غير مجابة`;
+  reviewButton.classList.remove("hidden");
+  document.getElementById("trialNotice").classList.toggle("hidden",!isTrialExam);
  }catch(error){
   submitted=false;
   if(seconds>0){clearInterval(timerId);timerId=setInterval(tick,1000);}
@@ -189,8 +223,9 @@ function showReview(){
   const title=document.createElement("strong");title.textContent=`${item.number}. ${item.question}`;
   const yourAnswer=document.createElement("p");yourAnswer.className="wrong";yourAnswer.textContent="إجابتك: "+(item.your_answer??"لم تجب");
   const correct=document.createElement("p");correct.className="correct";correct.textContent="الإجابة الصحيحة: "+item.correct_answer;
-  const explanation=document.createElement("p");explanation.textContent="التفسير: "+(item.explanation||"لا يوجد تفسير متاح.");
-  card.append(title,yourAnswer,correct,explanation);list.appendChild(card);
+  card.append(title,yourAnswer,correct);
+  if(currentSubject!=="arabic"&&item.explanation){const explanation=document.createElement("p");explanation.textContent="التفسير: "+item.explanation;card.appendChild(explanation);}
+  list.appendChild(card);
  });
  if(!list.children.length)list.textContent="أحسنت! لم ترتكب أي خطأ.";
 }
@@ -198,7 +233,9 @@ function showResult(){document.getElementById("review").classList.add("hidden");
 function resetExam(){
  clearInterval(timerId);submitted=false;examToken=null;questions=[];answers=[];current=0;currentSubject=null;isTrialExam=false;closeSubscriptionModal();
  document.getElementById("exam").classList.add("hidden");document.getElementById("result").classList.add("hidden");document.getElementById("review").classList.add("hidden");document.getElementById("setup").classList.remove("hidden");
+ loadStatus();
 }
+loadStatus();
 </script>
 </body>
 </html>
