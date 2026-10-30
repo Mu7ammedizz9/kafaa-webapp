@@ -6,53 +6,97 @@
 <title>اختبار الكفاءة</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-:root{color-scheme:light;--blue:#174ea6;--bg:#f3f6fb;--border:#d9e1ee;--text:#172033;--muted:#64748b}
+:root{color-scheme:light;
+--navy:#0b1f4d;--blue:#1d4ed8;--teal:#0f9d94;--gold:#f5b335;--gold-d:#b7791f;
+--bg:#eef3fb;--card:#ffffff;--border:#dbe4f3;--text:#14213d;--muted:#64748b;
+--grad:linear-gradient(135deg,#0b1f4d 0%,#1d4ed8 55%,#0f9d94 100%);
+--shadow:0 6px 22px rgba(11,31,77,.08)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Tahoma,Arial,sans-serif}
+body{margin:0;background:radial-gradient(1200px 400px at 50% -100px,#dbe8ff 0%,transparent 70%),var(--bg);color:var(--text);font-family:Tahoma,Arial,sans-serif}
 .app{max-width:650px;margin:auto;padding:16px}
-header{background:#173b70;color:white;padding:20px;border-radius:16px;margin-bottom:16px}
-header h1{margin:0 0 8px;font-size:22px} header p{margin:0;color:#d9e8ff;font-size:14px}
-.card{background:white;border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px}
+header{position:relative;overflow:hidden;background:var(--grad);color:#fff;padding:24px 20px;border-radius:20px;margin-bottom:16px;box-shadow:0 10px 30px rgba(29,78,216,.28)}
+header::before,header::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.08)}
+header::before{width:170px;height:170px;left:-50px;top:-60px}
+header::after{width:110px;height:110px;left:60px;bottom:-60px;background:rgba(245,179,53,.22)}
+header h1{margin:0 0 8px;font-size:23px;position:relative} header p{margin:0;color:#d6e6ff;font-size:14px;line-height:1.7;position:relative}
+header .chip{position:relative}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
 .row{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .muted{color:var(--muted);font-size:13px}
-.progress{height:7px;background:#e5eaf2;border-radius:20px;overflow:hidden;margin:14px 0}
-#progressBar{height:100%;width:0;background:var(--blue);transition:width .2s}
-#timer{color:var(--blue);font-weight:bold;font-size:18px;direction:ltr}
+.progress{height:8px;background:#e3eaf7;border-radius:20px;overflow:hidden;margin:14px 0}
+#progressBar{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--teal));border-radius:20px;transition:width .25s}
+#timer{color:var(--blue);font-weight:bold;font-size:18px;direction:ltr;background:#e8f0ff;padding:4px 12px;border-radius:20px}
 #question{font-size:19px;line-height:1.8;margin:18px 0;direction:ltr;text-align:left}
-.translation{background:#f0f5ff;border-radius:10px;padding:12px;margin:12px 0;line-height:1.8}
-.reading-passage{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:12px;padding:16px;margin:16px 0;line-height:1.8;text-align:left;direction:ltr;white-space:pre-wrap;color:#1e293b;overflow-wrap:anywhere}
-.reading-passage h3{margin:0 0 10px;font-size:18px;line-height:1.5}
+.translation{background:#e9f8f6;border:1px solid #bfe9e4;color:#0b4f4a;border-radius:12px;padding:12px;margin:12px 0;line-height:1.8}
+.reading-passage{background:#f3f7ff;border:1px solid #c9d8f5;border-right:4px solid var(--blue);border-radius:12px;padding:16px;margin:16px 0;line-height:1.8;text-align:left;direction:ltr;white-space:pre-wrap;color:#1e293b;overflow-wrap:anywhere}
+.reading-passage h3{margin:0 0 10px;font-size:18px;line-height:1.5;color:var(--navy)}
 #readingText{white-space:pre-wrap}
-.option{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;direction:ltr;padding:14px;margin:9px 0;border:1px solid var(--border);border-radius:11px;background:white;color:var(--text);font:inherit;cursor:pointer}
-.option.selected{border:2px solid var(--blue);background:#edf4ff}
+.option{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;direction:ltr;padding:14px;margin:9px 0;border:1.5px solid var(--border);border-radius:12px;background:#fff;color:var(--text);font:inherit;cursor:pointer;transition:.15s}
+.option:hover{border-color:#9db8f0;background:#f7faff}
+.option.selected{border:2px solid var(--blue);background:#eaf1ff;box-shadow:0 2px 10px rgba(29,78,216,.15)}
 .letter{font-weight:bold;color:var(--blue);min-width:22px}
-button{font-family:inherit;cursor:pointer}
-.primary,.secondary,.danger{border:0;border-radius:10px;padding:13px 16px;font-size:15px;font-weight:bold}
-.primary{background:var(--blue);color:white}.secondary{background:#e9eef7;color:#173b70}.danger{background:#fee2e2;color:#991b1b}
+button{font-family:inherit;cursor:pointer;transition:transform .12s,box-shadow .15s,filter .15s}
+button:active{transform:scale(.98)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.primary,.secondary,.danger,.gold,.wa{border:0;border-radius:12px;padding:13px 16px;font-size:15px;font-weight:bold}
+.primary{background:linear-gradient(135deg,#1d4ed8,#0b3aa8);color:#fff;box-shadow:0 5px 14px rgba(29,78,216,.3)}
+.secondary{background:#e8effc;color:var(--navy)}
+.danger{background:#fde8e8;color:#b42318}
+.gold{background:linear-gradient(135deg,#ffd166,#f5a623);color:#4a2c00;box-shadow:0 5px 14px rgba(245,166,35,.35)}
+.teal{background:linear-gradient(135deg,#14b8a6,#0f766e);color:#fff;box-shadow:0 5px 14px rgba(15,157,148,.3)}
+.wa{background:#dcf8e6;color:#14663a}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.actions button{flex:1}
-
 .hidden{display:none!important}
-.badge{display:inline-block;margin-right:8px;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:bold;background:#dcfce7;color:#166534;vertical-align:middle}.badge.used{background:#e2e8f0;color:#475569}
-.wa{background:#dcfce7;color:#166534;border:0;border-radius:10px;padding:13px 16px;font-size:15px;font-weight:bold}
-.modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.62);display:flex;align-items:center;justify-content:center;padding:18px;z-index:9999}
-.modal-box{background:#fff;width:100%;max-width:430px;border-radius:18px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:right}
-.modal-box h2{margin:0 0 10px}.modal-box p{line-height:1.8}.plan{border:1px solid var(--border);border-radius:10px;padding:11px;margin:8px 0;display:flex;justify-content:space-between;gap:8px}
-
+.badge{display:inline-block;margin-right:8px;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:bold;background:#d9f7ea;color:#0b6b43;vertical-align:middle}
+.badge.used{background:#e5e9f0;color:#4b5565}
+.modal-backdrop{position:fixed;inset:0;background:rgba(11,31,77,.6);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:18px;z-index:9999;overflow-y:auto}
+.modal-box{background:#fff;width:100%;max-width:430px;border-radius:22px;padding:22px;box-shadow:0 24px 70px rgba(0,0,0,.3);text-align:right;border-top:5px solid var(--gold)}
+.modal-box h2{margin:0 0 10px;color:var(--navy)}.modal-box p{line-height:1.9}
+.plan{border:1.5px solid var(--border);background:#f8fbff;border-radius:12px;padding:12px 14px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.plan strong{color:var(--blue)}
+.plan.best{border-color:var(--gold);background:#fff9e8}.plan.best strong{color:var(--gold-d)}
+.plan .save{font-size:11px;background:var(--gold);color:#4a2c00;border-radius:20px;padding:2px 8px;margin-right:6px;font-weight:bold}
+.trial-banner{display:flex;gap:10px;align-items:flex-start;background:linear-gradient(135deg,#fff8e1,#ffefc2);border:1px solid #f3d27a;border-radius:14px;padding:12px 14px;margin:14px 0 0;color:#6b4300;line-height:1.8;font-size:14px}
+.trial-banner .ic{font-size:22px}
+.hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 4px}
+.hero-actions .full-row{grid-column:1/-1}
+.subjects{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.subject{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:right;background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:14px;min-height:122px;color:var(--text);font:inherit;box-shadow:var(--shadow)}
+.subject:hover{border-color:#9db8f0}
+.subject.free{border-color:#6ee0c8;background:linear-gradient(180deg,#f1fffb,#fff)}
+.subject:active{background:#f6f9ff}
+.s-icon{font-size:26px;line-height:1;margin-bottom:2px;width:44px;height:44px;display:grid;place-items:center;border-radius:12px;background:#e8f0ff}
+.subject.free .s-icon{background:#d4f6ee}
+.subject strong{font-size:16px;line-height:1.5}.subject small{color:var(--muted);font-size:12.5px}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:bold;background:#fff1d6;color:#9a5b00;margin-top:auto}
+.tag::before{content:"🔒 "}
+.chip{display:inline-block;margin-top:12px;padding:4px 12px;border-radius:20px;font-size:12.5px;font-weight:bold;background:rgba(255,255,255,.18);color:#fff}.chip.on{background:#16a34a}
+#grade{margin:0 0 6px;font-weight:bold;font-size:17px;color:var(--teal)}
 .review-item{border-bottom:1px solid var(--border);padding:14px 0;line-height:1.8}
-.correct{color:#087443}.wrong{color:#b42318}.full{width:100%}
+.correct{color:#0b7a4b}.wrong{color:#c2410c}.full{width:100%}
+h2,h3{color:var(--navy)}
+@media(max-width:340px){.subjects,.hero-actions{grid-template-columns:1fr}}
 @media(max-width:400px){.app{padding:10px}.card{padding:14px}#question{font-size:17px}.reading-passage{padding:12px}}
 </style>
 </head>
 <body>
 <main class="app">
-<header><h1>منصة اختبار الكفاءة</h1><p>نظام امتحان تجريبي • اختر إجابتك ثم سلّم الامتحان عند الانتهاء</p></header>
+<header><h1>منصة اختبار الكفاءة</h1><p>تدرّب بأسئلة متجددة، مع ترجمة عربية وتصحيح فوري ومراجعة لأخطائك</p><span id="subChip" class="chip hidden"></span></header>
 <section class="card" id="setup">
-<h2>إعداد الامتحان</h2><p class="muted">اختر المادة لبدء الاختبار التجريبي.</p>
-<button class="primary full" onclick="startExam('english')">اللغة الإنجليزية</button>
-<button class="secondary full" style="margin-top:10px" onclick="startExam('computer')">الحاسوب</button>
-<button class="secondary full" style="margin-top:10px" onclick="startExam('arabic')">اللغة العربية <span id="trialBadge" class="badge hidden"></span></button>
-<button class="secondary full" style="margin-top:10px" onclick="startExam('reading')">القطع الخارجية</button>
-<div class="card" style="margin-top:16px"><h3>الاشتراكات المدفوعة</h3><p class="muted">تواصل معنا للحصول على معلومات الدفع وتفعيل الاشتراك.</p>
+<h2 style="margin:0 0 4px">اختر المادة</h2><p class="muted" style="margin:0">أسئلة تتغير في كل مرة، ولكل امتحان وقت محدد.</p>
+<div class="hero-actions">
+<button class="primary" onclick="scrollToSubjects()">▶ بدء الامتحان</button>
+<button class="teal secondary" onclick="showAboutModal()">ℹ️ ما هو كفاءة-KAFaa ؟</button>
+<button class="gold full-row" onclick="showSubscriptionModal('تعرّف على باقات الاشتراك واختر الأنسب لك.')">💎 معرفة الاشتراكات</button>
+</div>
+<div class="trial-banner" id="trialBanner"><span class="ic">🎁</span><span>التجربة المجانية متاحة لمادة <strong>اللغة العربية</strong> فقط، وبقية المواد تتطلب اشتراكاً.</span></div>
+<div class="subjects" id="subjectsGrid">
+<button class="subject free" onclick="startExam('arabic')"><span class="s-icon">📗</span><strong>اللغة العربية <span id="trialBadge" class="badge">تجربة مجانية</span></strong><small>60 سؤالاً • 60 دقيقة</small></button>
+<button class="subject" onclick="startExam('english')"><span class="s-icon">📘</span><strong>اللغة الإنجليزية</strong><small>40 سؤالاً • 40 دقيقة</small><span class="tag" data-lock>يتطلب اشتراكاً</span></button>
+<button class="subject" onclick="startExam('computer')"><span class="s-icon">💻</span><strong>الحاسوب</strong><small>40 سؤالاً • 40 دقيقة</small><span class="tag" data-lock>يتطلب اشتراكاً</span></button>
+<button class="subject" onclick="startExam('reading')"><span class="s-icon">📄</span><strong>القطع الخارجية</strong><small>قطعة و10 أسئلة • 10 دقائق</small><span class="tag" data-lock>يتطلب اشتراكاً</span></button>
+</div>
+<div class="card" style="margin:16px 0 0;box-shadow:none"><h3 style="margin-top:0">الاشتراكات المدفوعة</h3><p class="muted">تواصل معنا للحصول على معلومات الدفع وتفعيل الاشتراك.</p>
 <button class="primary full" onclick="contactTelegram()">التواصل عبر تيليغرام (@Iqkafaa)</button>
 <button class="wa full" style="margin-top:9px" onclick="contactWhatsApp()">التواصل عبر واتساب</button>
 <p class="muted" dir="ltr" style="text-align:center;margin:10px 0 0">WhatsApp: +964 776 443 7836</p>
@@ -69,7 +113,7 @@ button{font-family:inherit;cursor:pointer}
 <div class="actions"><button class="secondary" id="previousButton" onclick="moveQuestion(-1)">السابق</button><button class="primary" id="nextButton" onclick="moveQuestion(1)">التالي</button></div>
 <button class="danger full" style="margin-top:12px" onclick="confirmSubmit()">إنهاء وتسليم الامتحان</button>
 </section>
-<section class="card hidden" id="result"><h2 id="resultTitle">نتيجة الامتحان</h2><p id="score" style="font-size:24px;font-weight:bold"></p><p id="scoreDetails"></p>
+<section class="card hidden" id="result"><h2 id="resultTitle">نتيجة الامتحان</h2><p id="score" style="font-size:24px;font-weight:bold;margin-bottom:4px"></p><p id="grade"></p><p id="scoreDetails"></p>
 <div id="trialNotice" class="card hidden" style="background:#fff7e6;border-color:#f5d28a;margin:14px 0 0"><p style="margin:0 0 10px">أكملتَ التجربة المجانية. اشترك لإعادة الامتحان واستخدام بقية المواد.</p><button class="primary full" onclick="showSubscriptionModal('اشترك لإعادة الامتحان واستخدام بقية المواد.')">عرض الاشتراكات</button></div>
 <div class="actions"><button class="primary" id="reviewButton" onclick="showReview()">مراجعة الأخطاء</button><button class="secondary" onclick="resetExam()">إنهاء</button></div></section>
 <section class="card hidden" id="review"><h2>مراجعة الإجابات</h2><p class="muted">تظهر الإجابات الصحيحة بعد تسليم الامتحان فقط.</p><div id="reviewList"></div><button class="secondary full" onclick="showResult()">العودة للنتيجة</button></section>
@@ -81,7 +125,7 @@ button{font-family:inherit;cursor:pointer}
     <p id="subscriptionMessage">انتهت التجربة المجانية أو أن هذه المادة تحتاج اشتراكاً مدفوعاً.</p>
     <div class="plan"><span>شهر واحد</span><strong>4,000 د.ع</strong></div>
     <div class="plan"><span>3 أشهر</span><strong>11,000 د.ع</strong></div>
-    <div class="plan"><span>6 أشهر</span><strong>16,000 د.ع</strong></div>
+    <div class="plan best"><span>6 أشهر <span class="save">الأوفر</span></span><strong>15,000 د.ع</strong></div>
     <p class="muted">للدفع والتفعيل اليدوي، تواصل مع إدارة كفاءة عبر تيليغرام أو واتساب.</p>
     <p class="muted" id="myTelegramId" dir="ltr" style="text-align:center"></p>
     <button class="primary full" onclick="contactTelegram()">التواصل عبر تيليغرام (@Iqkafaa)</button>
@@ -89,9 +133,18 @@ button{font-family:inherit;cursor:pointer}
     <button class="secondary full" style="margin-top:9px" onclick="resetExam()">العودة إلى المواد</button>
   </div>
 </div>
+<div id="aboutModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+  <div class="modal-box">
+    <h2 id="aboutTitle">ما هو كفاءة-KAFaa ؟</h2>
+    <p><strong>كفاءة-KAFaa</strong> هي منصة تحاكي الاختبار الوطني، تتيح لك التدرّب بأسئلة متجددة وتوقيت حقيقي، مع ترجمة عربية وتصحيح فوري ومراجعة لأخطائك.</p>
+    <p class="muted">🎁 التجربة المجانية متاحة لمادة اللغة العربية فقط.</p>
+    <button class="primary full" onclick="closeAboutModal();scrollToSubjects()">ابدأ الآن</button>
+    <button class="secondary full" style="margin-top:9px" onclick="closeAboutModal()">إغلاق</button>
+  </div>
+</div>
 <script>
 const tg=window.Telegram?.WebApp;
-if(tg){tg.ready();tg.expand();}
+if(tg){tg.ready();tg.expand();try{tg.setHeaderColor("#173b70");tg.setBackgroundColor("#f3f6fb");}catch(e){}}
 const subjectNames={english:"اللغة الإنجليزية",computer:"الحاسوب",arabic:"اللغة العربية",reading:"القطع الخارجية"};
 let questions=[],examToken=null,currentSubject=null,answers=[],current=0,seconds=300,endTime=0,timerId=null,submitted=false,showArabic=false,isTrialExam=false;
 function showSubscriptionModal(message){
@@ -102,19 +155,27 @@ function showSubscriptionModal(message){
  document.getElementById("myTelegramId").textContent=myId?("ID: "+myId):"";
  modal.classList.remove("hidden");
 }
+function showAboutModal(){document.getElementById("aboutModal").classList.remove("hidden");}
+function closeAboutModal(){document.getElementById("aboutModal").classList.add("hidden");}
+function scrollToSubjects(){document.getElementById("subjectsGrid").scrollIntoView({behavior:"smooth",block:"start"});}
 function closeSubscriptionModal(){document.getElementById("subscriptionModal").classList.add("hidden");}
 const TELEGRAM_CONTACT="https://t.me/Iqkafaa",WHATSAPP_CONTACT="https://wa.me/9647764437836",API="https://mu7ammedizz7.pythonanywhere.com";
 function contactTelegram(){if(tg?.openTelegramLink)tg.openTelegramLink(TELEGRAM_CONTACT);else window.open(TELEGRAM_CONTACT,"_blank");}
 function contactWhatsApp(){if(tg?.openLink)tg.openLink(WHATSAPP_CONTACT);else window.open(WHATSAPP_CONTACT,"_blank");}
 async function loadStatus(){
- const badge=document.getElementById("trialBadge");
- badge.classList.add("hidden");
+ const badge=document.getElementById("trialBadge"),chip=document.getElementById("subChip");
+ const locks=document.querySelectorAll("[data-lock]");
+ chip.classList.add("hidden");const banner=document.getElementById("trialBanner");
  if(!tg?.initData)return;
  try{
   const r=await fetch(API+"/api/status",{headers:{"Authorization":"tma "+tg.initData}});
   if(!r.ok)return;
   const s=await r.json();
-  if(s.subscription_active)return;
+  if(s.subscription_active){
+   chip.textContent="اشتراك فعّال حتى "+new Date(s.subscription_until*1000).toLocaleDateString("en-GB");
+   chip.className="chip on";locks.forEach(l=>l.classList.add("hidden"));badge.classList.add("hidden");banner.classList.add("hidden");document.querySelector(".subject.free")?.classList.remove("free");return;
+  }
+  chip.textContent="غير مشترك";chip.className="chip";
   badge.textContent=s.trial_available?"تجربة مجانية":"انتهت التجربة";
   badge.classList.toggle("used",!s.trial_available);
   badge.classList.remove("hidden");
@@ -206,6 +267,7 @@ async function submitExam(){
   const reviewButton=document.getElementById("reviewButton"),resultTitle=document.getElementById("resultTitle");
   resultTitle.textContent="نتيجة الامتحان";
   document.getElementById("score").textContent=`درجتك: ${data.percent}%`;
+  document.getElementById("grade").textContent=data.percent>=90?"التقدير: ممتاز":data.percent>=80?"التقدير: جيد جداً":data.percent>=70?"التقدير: جيد":data.percent>=50?"التقدير: مقبول":"التقدير: تحتاج إلى مزيد من التدريب";
   document.getElementById("scoreDetails").textContent=`الإجابات: ${data.correct} صحيحة، ${data.wrong_or_unanswered} خاطئة أو غير مجابة`;
   reviewButton.classList.remove("hidden");
   document.getElementById("trialNotice").classList.toggle("hidden",!isTrialExam);
